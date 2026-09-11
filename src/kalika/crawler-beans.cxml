@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  HERITRIX 3 CRAWL JOB CONFIGURATION FILE
+  HERITRIX 3 CRAWL JOB CONFIGURATION FILE FOR KALIKA
   
-   This is a relatively minimal configuration suitable for many crawls.
+   This file was derived from the relatively minimal Heritrix
+   default configuration that is suitable for many crawls.
+
+   Those configuration values have been changed:
+
+   - metadata: operatorContactUrl, jobName, description
+   - CrawlMetadata: robotsPolicyName
+   - WARCWriterChainProcessor: frequentFlushes, writeBufferSize
+   - DispostionProcessor: delayFactor, minDelayMs, respectCrawlDelayUpToSeconds, maxDelayMs
+   - CrawlController: maxToeThreads, pauseAtStart
+   - BdbFrontier: snoozeLongMs, retryDelaySeconds, maxRetries
+   - CrawlLimitEnforcer: maxDocumentsDownload, maxTimeSeconds
    
    Commented-out beans and properties are provided as an example; values
    shown in comments reflect the actual defaults which are in effect
@@ -37,9 +48,9 @@
 # This Properties map is specified in the Java 'property list' text format
 # http://java.sun.com/javase/6/docs/api/java/util/Properties.html#load%28java.io.Reader%29
 
-metadata.operatorContactUrl=ENTER_AN_URL_WITH_YOUR_CONTACT_INFO_HERE_FOR_WEBMASTERS_AFFECTED_BY_YOUR_CRAWL
-metadata.jobName=basic
-metadata.description=Basic crawl starting with useful defaults
+metadata.operatorContactUrl=https://github.com/panodata/kalika
+metadata.jobName=www.example.org
+metadata.description=Conserving https://www.example.org
 
 ##..more?..##
    </value>
@@ -52,10 +63,7 @@ metadata.description=Basic crawl starting with useful defaults
   <property name="properties">
    <props>
     <prop key="seeds.textSource.value">
-
-# URLS HERE
-http://example.example/example
-
+# Add seed URL here.
     </prop>
    </props>
   </property>
@@ -66,7 +74,7 @@ http://example.example/example
        <property name="operatorContactUrl" value="[see override above]"/>
        <property name="jobName" value="[see override above]"/>
        <property name="description" value="[see override above]"/>
-  <!-- <property name="robotsPolicyName" value="obey"/> -->
+       <property name="robotsPolicyName" value="ignore"/>
   <!-- <property name="operator" value=""/> -->
   <!-- <property name="operatorFrom" value=""/> -->
   <!-- <property name="organization" value=""/> -->
@@ -382,6 +390,8 @@ http://example.example/example
        </property> -->
   <!-- <property name="template" value="${prefix}-${timestamp17}-${serialno}-${heritrix.pid}~${heritrix.hostname}~${heritrix.port}" /> -->
   <!-- <property name="startNewFilesOnCheckpoint" value="true" /> -->
+  <property name="frequentFlushes" value="false" />
+  <property name="writeBufferSize" value="2000000" />
   <!--
   <property name="chain">
    <list>
@@ -401,11 +411,12 @@ http://example.example/example
   <!-- <property name="seedsRedirectNewSeeds" value="true" /> -->
   <!-- <property name="processErrorOutlinks" value="false" /> -->
  </bean>
+ <!-- Attention: Reconfigured for throughput instead of politeness -->
  <bean id="disposition" class="org.archive.crawler.postprocessor.DispositionProcessor">
-  <!-- <property name="delayFactor" value="5.0" /> -->
-  <!-- <property name="minDelayMs" value="3000" /> -->
-  <!-- <property name="respectCrawlDelayUpToSeconds" value="300" /> -->
-  <!-- <property name="maxDelayMs" value="30000" /> -->
+  <property name="delayFactor" value="1.0" />
+  <property name="minDelayMs" value="0" />
+  <property name="respectCrawlDelayUpToSeconds" value="5" />
+  <property name="maxDelayMs" value="1000" />
   <!-- <property name="maxPerHostBandwidthUsageKbSec" value="0" /> -->
  </bean>
  <!-- <bean id="rescheduler" class="org.archive.crawler.postprocessor.ReschedulingProcessor">
@@ -430,8 +441,8 @@ http://example.example/example
  <!-- CRAWLCONTROLLER: Control interface, unifying context -->
  <bean id="crawlController" 
    class="org.archive.crawler.framework.CrawlController">
-  <!-- <property name="maxToeThreads" value="25" /> -->
-  <!-- <property name="pauseAtStart" value="true" /> -->
+  <property name="maxToeThreads" value="15" />
+  <property name="pauseAtStart" value="false" />
   <!-- <property name="runWhileEmpty" value="false" /> -->
   <!-- <property name="recorderInBufferBytes" value="524288" /> -->
   <!-- <property name="recorderOutBufferBytes" value="16384" /> -->
@@ -448,9 +459,9 @@ http://example.example/example
   <!-- <property name="queuePrecedencePolicy">
         <bean class="org.archive.crawler.frontier.precedence.BaseQueuePrecedencePolicy" />
        </property> -->
-  <!-- <property name="snoozeLongMs" value="300000" /> -->
-  <!-- <property name="retryDelaySeconds" value="900" /> -->
-  <!-- <property name="maxRetries" value="30" /> -->
+  <property name="snoozeLongMs" value="0" />
+  <property name="retryDelaySeconds" value="1" />
+  <property name="maxRetries" value="3" />
   <!-- <property name="recoveryLogEnabled" value="true" /> -->
   <!-- <property name="maxOutlinks" value="6000" /> -->
   <!-- <property name="extractIndependently" value="false" /> -->
@@ -576,8 +587,8 @@ http://example.example/example
  <!--  CRAWLLIMITENFORCER: stops crawl when it reaches configured limits -->
  <bean id="crawlLimiter" class="org.archive.crawler.framework.CrawlLimitEnforcer">
   <!-- <property name="maxBytesDownload" value="0" /> -->
-  <!-- <property name="maxDocumentsDownload" value="0" /> -->
-  <!-- <property name="maxTimeSeconds" value="0" /> -->
+  <property name="maxDocumentsDownload" value="10000" />
+  <property name="maxTimeSeconds" value="3600" />
  </bean>
  
  <!-- CHECKPOINTSERVICE: checkpointing assistance -->
