@@ -1,15 +1,19 @@
 import json
+import logging
 import os
 import re
 import shutil
 import tempfile
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import cast
 from urllib.parse import urlparse
 
 import pandas as pd
 from heritrix3 import HeritrixAPI, disable_ssl_warnings
 from tabulate import tabulate
+
+logger = logging.getLogger(__name__)
 
 
 class Crawler:
@@ -17,18 +21,24 @@ class Crawler:
         self.heritrix_url = heritrix_url
         disable_ssl_warnings()
         self.api = HeritrixAPI(
-            host=heritrix_url, user="admin", passwd="admin", verbose=True
+            host=heritrix_url,
+            user="admin",
+            passwd="admin",  # noqa: S106
+            verbose=True,
         )
 
-    def add_job(self, url: str):
+    def add_url(self, url: str):
 
         parsed_url = urlparse(url)
         job_name = parsed_url.hostname
-        print("Adding job:", job_name)
+        if job_name is None:
+            raise ValueError("Job name cannot be None")
+        logger.info("Adding job: %s", job_name)
 
         # dump info
         # pprint(self.api.info(raw=False))
 
+        # FIXME: Use correct path to the package, not to the repository root.
         job_xml_path = Path("src/kalika/crawler-beans.cxml")
         job_xml = job_xml_path.read_text()
         job_xml = job_xml.replace("# Add seed URL here.", url)
@@ -49,31 +59,25 @@ class Crawler:
         # self.api.teardown(job_name=job_name)
         self.api.send_config(job_name=job_name, cxml_filepath=Path(tmpfile.name))
 
-        print("Build")
+        logger.info("Building: %s", job_name)
         self.api.build(job_name=job_name)
         self.api.wait_for_action(job_name=job_name, action="build", poll_delay=0.25)
 
-        print("Launch")
+        logger.info("Launching: %s", job_name)
         self.api.launch(job_name=job_name)
         self.api.wait_for_action(job_name=job_name, action="launch", poll_delay=0.25)
 
     def add_file(self, path: str):
         urls = Path(path).read_text().splitlines()
-        # print(urls)
         for url in urls:
-            self.add_job(url)
-            # time.sleep(1)
+            self.add_url(url)
 
     def get_jobs(self):
-        # pprint(api.info(raw=False))
         # RUNNING, FINISHED
         jobs = self.api.list_jobs(status="RUNNING")
         data = []
         for job_name in sorted(jobs):
-            # print(job)
-            # print(api.info(job_name=job), type(api.info(job_name=job)))
-            job_info = self.api.info(job_name=job_name)
-            # pprint(job_info)
+            job_info = cast(dict, cast(object, self.api.info(job_name=job_name)))
             # elapsedMilliseconds
             metadata = {
                 "name": job_name,
@@ -85,19 +89,8 @@ class Crawler:
                 "uri_queue": int(job_info["job"]["uriTotalsReport"]["queuedUriCount"]),
                 "uri_total": int(job_info["job"]["uriTotalsReport"]["totalUriCount"]),
             }
-            # print(job, metadata)
-            # print(job)
             data.append(metadata)
-            # pprint(api.get_job_state(job_name=job))
-            # pprint(api.get_job_actions(job_name=job))
-            ##print(api.job_log(job_name=job))
-            # print("launchid:", api.get_launchid(job_name=job))
-            # print("seeds-report:", api.seeds_report(job_name=job))
-            # print("warcs:", api.list_warcs(job_name=job))
-            # break
-        # pprint(data)
         df = pd.DataFrame(data)
-        # print(df["rate_kilobyte"].sum())
         if data:
             total = {
                 "name": "total",
@@ -107,7 +100,7 @@ class Crawler:
                 "uri_total": df["uri_total"].sum(),
             }
             data.append(total)
-        print(tabulate(data, headers="keys"))
+        print(tabulate(data, headers="keys"))  # noqa: T201
 
     def finish_jobs(self, path: str):
         target_path = Path(path)
@@ -119,10 +112,10 @@ class Crawler:
             self.finish_job(job_name=job_name, target_path=target_path)
 
     def finish_job(self, job_name: str, target_path: str | Path):
-        print(f"Finishing job: {job_name}")
+        logger.info("Finishing job: %s", job_name)
         target_path = Path(target_path)
         # Save job metadata to JSON file.
-        job_info = self.api.info(job_name=job_name)
+        job_info = cast(dict, cast(object, self.api.info(job_name=job_name)))
         delete_keys = [
             "primaryConfigUrl",
             "url",
@@ -154,22 +147,22 @@ class Crawler:
                     m = regex.match(str(warc_file.name))
                     if m:
                         seq_number = m.group(1)
-                        warc_file.move(target_path / f"{job_name}-{seq_number}.warc.gz")
+                        warc_file.move(target_path / f"{job_name}-{seq_number}.warc.gz")  # ty: ignore[unresolved-attribute]
                     else:
                         raise ValueError(
                             f"Could not parse WARC file name {warc_file.name}"
                         )
             else:
                 warc_file = warc_files[0]
-                print(f"INFO: WARC file for {job_name}: {warc_file}")
-                warc_file.move(target_path / f"{job_name}.warc.gz")
+                logger.info("INFO: WARC file for %s: %s", job_name, warc_file)
+                warc_file.move(target_path / f"{job_name}.warc.gz")  # ty: ignore[unresolved-attribute]
 
             self.api.teardown(job_name=job_name)
             # api.wait_for_action(job_name=job_name, action="teardown", poll_delay=0.25)
             # time.sleep(1)
             # api.delete_job_dir(job_name=job_name)
         else:
-            print(f"WARNING: No WARC files for {job_name}")
+            logger.info("WARNING: No WARC files for: %s", job_name)
         shutil.rmtree(tmpdir)
 
 
@@ -178,8 +171,8 @@ if __name__ == "__main__":
     if not heritrix_url:
         raise ValueError("Environment variable HERITRIX_URL not set")
     crawler = Crawler(heritrix_url=heritrix_url)
-    # crawler.add_job("https://foo.example.org/")
-    crawler.add_file("var/manual.txt")
+    # crawler.add_url("https://foo.example.org/")
+    crawler.add_file("var/topics.txt")
     # crawler.add_file("var/dr-0.txt")
     # crawler.add_file("var/dr-a.txt")
     # crawler.add_file("var/dr-b.txt")

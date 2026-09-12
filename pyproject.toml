@@ -1,0 +1,249 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=42",
+  "versioningit",
+]
+
+[project]
+name = "kalika"
+description = "Web archiver and crawler based on Heritrix and pywb"
+readme = "README.md"
+keywords = [
+  "archiving",
+  "conservancy",
+  "heritrix",
+  "library",
+  "pywb",
+  "wayback",
+  "web-archive",
+]
+license = "Apache-2.0"
+authors = [
+  { name = "Andreas Motl", email = "andreas.motl@panodata.org" },
+]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Customer Service",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Manufacturing",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Telecommunications Industry",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: OS Independent",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Unix",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+  "Topic :: Adaptive Technologies",
+  "Topic :: Communications",
+  "Topic :: Database",
+  "Topic :: Documentation",
+  "Topic :: Education",
+  "Topic :: Internet",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Office/Business",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Pre-processors",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Software Development :: Version Control",
+  "Topic :: System :: Archiving",
+  "Topic :: System :: Clustering",
+  "Topic :: System :: Distributed Computing",
+  "Topic :: System :: Logging",
+  "Topic :: System :: Monitoring",
+  "Topic :: System :: Networking",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Text Processing",
+  "Topic :: Utilities",
+]
+dynamic = [ "version" ]
+dependencies = [
+  "click",
+  "colorlog",
+  "heritrix3",
+  "pandas",
+  "tabulate",
+]
+optional-dependencies.develop = [
+  "poethepoet<1",
+  "pyproject-fmt<3",
+  "ruff==0.16.*",
+  "ty==0.0.80",
+  "validate-pyproject<1",
+]
+optional-dependencies.release = [
+  "build<2",
+  "setuptools>=83",
+  "twine<8",
+]
+optional-dependencies.test = [
+  "pytest<10",
+  "pytest-cov<8",
+  "pytest-mock<4",
+]
+urls.Changelog = "https://kalika.readthedocs.io/changelog.html"
+urls.Documentation = "https://kalika.readthedocs.io/"
+urls.Issues = "https://github.com/panodata/kalika/issues"
+urls.Repository = "https://github.com/panodata/kalika"
+scripts.kalika = "kalika.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.ruff]
+line-length = 88
+lint.select = [
+  # Builtins
+  "A",
+  # Bugbear
+  "B",
+  # comprehensions
+  "C4",
+  # Pycodestyle
+  "E",
+  "E4",
+  "E7",
+  "E9",
+  # eradicate
+  "ERA",
+  # Pyflakes
+  "F",
+  # isort
+  "I",
+  # pandas-vet
+  "PD",
+  # return
+  "RET",
+  # Bandit
+  "S",
+  # print
+  "T20",
+  "W",
+  # flake8-2020
+  "YTT",
+]
+# lint.ignore = [ "E501" ]
+lint.extend-ignore = [
+  # Module `xxx` shadows a Python standard-library module
+  "A005",
+  # raise-without-from-inside-except
+  "B904",
+  # zip() without an explicit strict= parameter
+  "B905",
+  # Found commented-out code
+  "ERA001",
+  # collapsible-else-if
+  "PLR5501",
+  # Unnecessary variable assignment before `return` statement
+  "RET504",
+  # Unnecessary `elif` after `return` statement
+  "RET505",
+  # Unnecessary `elif` after `raise` statement
+  "RET506",
+  # Unnecessary `else` after `continue` statement
+  "RET507",
+  # Unnecessary `else` after `break` statement
+  "RET508",
+  # Probable insecure usage of temporary file or directory
+  "S108",
+]
+lint.per-file-ignores."tests/*" = [
+  # Variable is shadowing a Python builtin
+  "A001",
+  # Function argument is shadowing a Python builtin
+  "A002",
+  # Unnecessary list comprehension (rewrite using `list()`)
+  "C416",
+  # line-too-long
+  "E501",
+  # Allow use of `assert`.
+  "S101",
+  # Possible SQL injection vector through string-based query construction
+  "S608",
+  # `print` found
+  "T201",
+]
+
+[tool.pytest]
+ini_options.minversion = "2.0"
+ini_options.testpaths = [
+  "examples",
+  "kalika",
+  "tests",
+]
+ini_options.pythonpath = [
+  "src",
+]
+ini_options.addopts = """
+  -rfEXsS -p pytester --strict-markers --verbosity=3
+  --cov --cov-report=term-missing --cov-report=xml
+  """
+ini_options.markers = []
+ini_options.xfail_strict = true
+ini_options.log_format = "%(asctime)-15s [%(name)-36s] %(levelname)-8s: %(message)s"
+ini_options.log_level = "DEBUG"
+ini_options.log_cli_level = "DEBUG"
+# addopts = "-vvv -p no:warnings -rP"
+
+[tool.coverage]
+run.omit = [ "tests/**" ]
+
+[tool.poe]
+tasks.check = [
+  "lint",
+  "test",
+]
+tasks.docs-autobuild = [
+  { cmd = "uv pip install -r docs/requirements.txt;" },
+  { cmd = "sphinx-autobuild --open-browser docs docs/_build" },
+]
+tasks.docs-html = [
+  { cmd = "uv pip install -r docs/requirements.txt;" },
+  { cmd = "sphinx-build -W --keep-going docs docs/_build" },
+]
+tasks.docs-linkcheck = [
+  { cmd = "uv pip install -r docs/requirements.txt;" },
+  { cmd = "sphinx-build -j auto -W --keep-going -b linkcheck docs docs/_build" },
+]
+tasks.docs-lint = { cmd = "vale docs" }
+tasks.format = [
+  # Format project metadata.
+  { cmd = "pyproject-fmt --keep-full-version pyproject.toml" },
+  # Format code.
+  # Configure Ruff not to auto-fix a few items that are useful in workbench mode.
+  # e.g.: unused imports (F401), unused variables (F841), `print` statements (T201), commented-out code (ERA001)
+  { cmd = "ruff format" },
+  { cmd = "ruff check --fix --ignore=ERA --ignore=F401 --ignore=F841 --ignore=T20 --ignore=ERA001" },
+]
+tasks.lint = [
+  { cmd = "ruff format --check" },
+  { cmd = "ruff check" },
+  { cmd = "validate-pyproject pyproject.toml" },
+  { cmd = "ty check" },
+]
+tasks.release = [
+  { cmd = "python -m build" },
+  { cmd = "twine upload --verbose --skip-existing dist/*" },
+]
+tasks.test = { cmd = "pytest" }
+
+[tool.versioningit]
+vcs.method = "git-archive"
+vcs.default-tag = "v0.0.0"
+vcs.describe-subst = "$Format:%(describe:tags,match=v*)$"
