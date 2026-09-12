@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Kalika"
+project = "kalika"
 copyright = "2026, The Kalika developers"  # noqa: A001
 author = "The Kalika developers"
 
@@ -46,7 +46,7 @@ html_theme = "furo"
 # further.  For a list of options available for each theme, see the
 # documentation.
 
-html_title = "kalika"
+html_title = "Kalika"
 
 html_theme_options = {
     "sidebar_hide_name": False,

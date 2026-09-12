@@ -2,46 +2,40 @@
 outline: deep
 ---
 
-# Introduction
+# Welcome to Kalika
 
-Kalika is a web archiver and crawler based on Heritrix and pywb.
+Kalika is a web archiver and crawler based on Heritrix and pywb,
+providing a convenient interface to both of them. It supports you
+to:
 
-- Crawl the web using Internet Archive's Heritrix to create per-site WARC files.
-- Replay WARC files using pywb's `wayback` application, providing the traditional
+- Crawl the web using Internet Archive's [Heritrix] to create per-site WARC files.
+- Replay WARC files using [pywb]'s `wayback` application, providing the traditional
   "Wayback Machine" functionality.
 
-## Installation
+:::{rubric} Etymology
+:::
 
-We recommend using [uv] to run `kalika`.
+[Kalika][Kalika-goddess] is a major goddess in Hinduism, primarily associated
+with time, death, and destruction. Kalika is also connected with transcendental
+knowledge and is the first of the ten Mahavidyas, goddesses who provide
+liberating knowledge.
 
-```bash
-pip install uv
-uvx kalika
-```
 
-Alternatively, if you'd like to install Kalika globally:
-
-```bash
-uv pip install --system kalika
-```
-
-While installation with vanilla `pip` is possible, it is an order of magnitude slower.
-
-### License
-
-The project is licensed under the Apache 2.0 License, see the [LICENSE] file for details.
-
-### Acknowledgements
-
-This project would not have been possible without the amazing work by the
-authors and contributors to [Heritrix], [pywb], and all the other great
-software packages turtles all the way down. Kudos.
 
 ```{toctree}
-:caption: Project
+:caption: Usage
 :maxdepth: 1
 :hidden:
 
+handbook
+```
+
+```{toctree}
+:caption: Development
+:maxdepth: 1
+:hidden:
+
+project
 sandbox
 changelog
 backlog
@@ -49,6 +43,6 @@ backlog
 
 
 [Heritrix]: https://github.com/internetarchive/heritrix3
+[Kalika-goddess]: https://en.wikipedia.org/wiki/Kali
 [LICENSE]: https://github.com/panodata/kalika/blob/main/LICENSE
 [pywb]: https://pypi.org/project/pywb/
-[uv]: https://github.com/astral-sh/uv
