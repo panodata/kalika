@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 
 import pandas as pd
 from heritrix3 import HeritrixAPI, disable_ssl_warnings
-from tabulate import tabulate
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +98,7 @@ class Crawler:
                 "uri_total": df["uri_total"].sum(),
             }
             data.append(total)
-        print(tabulate(data, headers="keys"))  # noqa: T201
+        return data
 
     def finish_jobs(self, path: str):
         target_path = Path(path)

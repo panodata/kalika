@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import click
+from tabulate import tabulate
 
 from kalika.heritrix import Crawler
 from kalika.util import setup_logging
@@ -54,3 +55,15 @@ def drain(ctx: click.Context, path: str):
         logger.error("Path does not exist: %s", path)
         sys.exit(1)
     crawler.finish_jobs(path)
+
+
+@main.command()
+@click.pass_context
+def list_jobs(ctx: click.Context):
+    """Display list of crawler jobs."""
+    if ctx.parent is None:
+        raise ValueError("Needs a parent context")
+    heritrix_url = ctx.parent.params["heritrix_url"]
+    crawler = Crawler(heritrix_url=heritrix_url)
+    jobs = crawler.get_jobs()
+    print(tabulate(jobs, headers="keys"))  # noqa: T201
