@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import re
 import shutil
 import tempfile
@@ -164,22 +163,3 @@ class Crawler:
         else:
             logger.info("WARNING: No WARC files for: %s", job_name)
         shutil.rmtree(tmpdir)
-
-
-if __name__ == "__main__":
-    heritrix_url = os.getenv("HERITRIX_URL")
-    if not heritrix_url:
-        raise ValueError("Environment variable HERITRIX_URL not set")
-    crawler = Crawler(heritrix_url=heritrix_url)
-    # crawler.add_url("https://foo.example.org/")
-    crawler.add_file("var/topics.txt")
-    # crawler.add_file("var/dr-0.txt")
-    # crawler.add_file("var/dr-a.txt")
-    # crawler.add_file("var/dr-b.txt")
-    # crawler.add_file("var/dr-c.txt")
-    # crawler.get_jobs()
-    # crawler.finish_jobs("/media/foo/warc")
-    # crawler.finish_job("foo.example.org", "/media/foo/warc")
-    # crawler.finish_job("foo.example.org", "./var/warc")
-    # crawler.download_warc("/media/foo/warc")
-    # crawler.download_warc("./var/warc")

@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("--debug", is_flag=True)
 def main(ctx: click.Context, heritrix_url: str, verbose: bool, debug: bool):
+    if not heritrix_url:
+        raise ValueError("Environment variable HERITRIX_URL not set")
     ctx.params["heritrix_url"] = heritrix_url
     setup_logging()
     logger.info("Welcome to Kalika")
@@ -37,3 +39,18 @@ def add(ctx: click.Context, item: str):
     else:
         logger.error("Item is not a file or url: %s", item)
         sys.exit(1)
+
+
+@main.command()
+@click.pass_context
+@click.argument("path")
+def drain(ctx: click.Context, path: str):
+    """Drain WARC file from the crawler."""
+    if ctx.parent is None:
+        raise ValueError("Needs a parent context")
+    heritrix_url = ctx.parent.params["heritrix_url"]
+    crawler = Crawler(heritrix_url=heritrix_url)
+    if not Path(path).exists():
+        logger.error("Path does not exist: %s", path)
+        sys.exit(1)
+    crawler.finish_jobs(path)
