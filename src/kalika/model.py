@@ -21,17 +21,15 @@ class CrawlerManager:
 
     crawlers: List[CrawlerInfo] = field(default_factory=list)
 
-    def get_preferred_crawler(self):
+    def get_preferred_crawler(self) -> CrawlerInfo:
         """Get crawler with the lowest job count."""
         for crawler_info in self.crawlers:
             info = crawler_info.instance.info()
             if info["engine"]["jobs"]:
                 jobcount = len(info["engine"]["jobs"]["value"])
             else:
-                jobcount = 0
+                jobcount = -1
             crawler_info.jobcount = jobcount
 
-        reverse_sorted_by_job_count = sorted(
-            self.crawlers, key=attrgetter("jobcount"), reverse=True
-        )
+        reverse_sorted_by_job_count = sorted(self.crawlers, key=attrgetter("jobcount"))
         return reverse_sorted_by_job_count[0]
