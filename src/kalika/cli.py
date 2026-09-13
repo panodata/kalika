@@ -7,6 +7,7 @@ import click
 from tabulate import tabulate
 
 from kalika.heritrix import Crawler
+from kalika.listmanager import find_missing_sites
 from kalika.model import CrawlerInfo, CrawlerManager
 from kalika.util import read_config, setup_logging
 
@@ -112,3 +113,15 @@ def list_jobs(ctx: click.Context):
             continue
         print(tabulate(jobs, headers="keys"))  # noqa: T201
         print()  # noqa: T201
+
+
+@main.command()
+@click.pass_context
+@click.option("--url-list", type=str, required=True, help="Path to URL list file")
+@click.option(
+    "--directory", type=str, required=True, help="Path to downloaded WARC files"
+)
+def compare(ctx: click.Context, url_list: str, directory: str):
+    """Display list of missing sites."""
+    missing = find_missing_sites(url_list, directory)
+    print("\n".join(missing))  # noqa: T201

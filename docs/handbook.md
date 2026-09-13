@@ -55,5 +55,13 @@ export HERITRIX_URL="https://heritrix.example.org:8443/engine"
 kalika drain /media/archive
 ```
 
+## Tools
+
+Display missing sites by comparing list of input URLs
+against files in the WARC output directory.
+```shell
+kalika compare --url-list urls.txt --directory /media/archive
+```
+
 
 [uv]: https://github.com/astral-sh/uv
