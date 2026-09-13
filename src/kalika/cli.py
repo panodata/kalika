@@ -73,14 +73,25 @@ def add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
 @main.command()
 @click.pass_context
 @click.argument("path", help="Path to output directory")
-@click.argument("crawler_index", help="Crawler index")
-def drain(ctx: click.Context, path: str, crawler_index: int):
+@click.option(
+    "--crawler", "crawler_index", type=int, help="Crawler number to dispatch to (0-x)"
+)
+def drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
     """Drain WARC file from the crawler."""
     if not Path(path).exists():
         logger.error("Path does not exist: %s", path)
         sys.exit(1)
     mgr: CrawlerManager = ctx.meta["mgr"]
-    crawler = mgr.crawlers[crawler_index].instance
+    if crawler_index is not None:
+        crawler_info = mgr.get_crawler_by_index(crawler_index)
+    elif len(mgr.crawlers) == 1:
+        crawler_info = mgr.get_crawler_by_index(0)
+    else:
+        raise ValueError("No or too many crawlers have been selected")
+    logger.info(
+        "Selected crawler: %s (%s jobs)", crawler_info.name, crawler_info.jobcount
+    )
+    crawler = crawler_info.instance
     crawler.finish_jobs(path)
 
 
