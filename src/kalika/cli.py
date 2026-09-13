@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import click
 from tabulate import tabulate
@@ -46,11 +46,17 @@ def main(
 
 @main.command()
 @click.pass_context
-@click.argument("item", help="Item to crawl: URL or file with URLs")
-def add(ctx: click.Context, item: str):
+@click.argument("item", help="Item to crawl: Single URL or file with multiple URLs")
+@click.option(
+    "--crawler", "crawler_index", type=int, help="Crawler number to dispatch to (0-x)"
+)
+def add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
     """Add one or multiple items to the crawler."""
     mgr: CrawlerManager = ctx.meta["mgr"]
-    crawler_info = mgr.get_preferred_crawler()
+    if crawler_index is not None:
+        crawler_info = mgr.get_crawler_by_index(crawler_index)
+    else:
+        crawler_info = mgr.get_preferred_crawler()
     logger.info(
         "Selected crawler: %s (%s jobs)", crawler_info.name, crawler_info.jobcount
     )

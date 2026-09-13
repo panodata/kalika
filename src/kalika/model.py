@@ -21,6 +21,10 @@ class CrawlerManager:
 
     crawlers: List[CrawlerInfo] = field(default_factory=list)
 
+    def get_crawler_by_index(self, index: int) -> CrawlerInfo:
+        """Get crawler by index."""
+        return self.crawlers[index]
+
     def get_preferred_crawler(self) -> CrawlerInfo:
         """Get crawler with the lowest job count."""
         for crawler_info in self.crawlers:
