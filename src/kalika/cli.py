@@ -82,7 +82,8 @@ def drain(ctx: click.Context, path: str, crawler_index: int):
 @click.pass_context
 def list_jobs(ctx: click.Context):
     """Display list of crawler jobs."""
-    for crawler_info in ctx.meta["crawler"]:
+    mgr: CrawlerManager = ctx.meta["mgr"]
+    for crawler_info in mgr.crawlers:
         print(f"Running jobs for crawler: {crawler_info.name}")  # noqa: T201
         crawler = crawler_info.instance
         try:
