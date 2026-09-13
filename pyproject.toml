@@ -79,6 +79,7 @@ dependencies = [
   "heritrix3",
   "pandas",
   "tabulate",
+  "tomli",
 ]
 optional-dependencies.develop = [
   "poethepoet<1",

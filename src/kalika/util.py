@@ -4,6 +4,7 @@ import logging
 import os
 
 import colorlog
+import tomli
 from colorlog.escape_codes import escape_codes
 
 
@@ -28,3 +29,8 @@ def setup_logging(
 
     if verbose:
         logging.getLogger("kalika").setLevel(logging.DEBUG)
+
+
+def read_config(path: str):
+    with open(path, "rb") as f:
+        return tomli.load(f)

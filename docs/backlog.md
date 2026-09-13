@@ -3,7 +3,8 @@
 ## Iteration +1
 
 - Handle multiple Heritrix servers at once
-- Recycle Heritrix workers after processing 500 jobs
+- Recycle Heritrix workers after processing 500 jobs,
+  or after accumulating X GB in its spool directory
 
 ## Iteration +2
 

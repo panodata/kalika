@@ -25,6 +25,9 @@ class Crawler:
             verbose=True,
         )
 
+    def info(self):
+        return self.api.info()
+
     def add_url(self, url: str):
 
         parsed_url = urlparse(url)
