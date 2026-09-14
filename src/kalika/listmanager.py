@@ -1,4 +1,3 @@
-from difflib import unified_diff
 from pathlib import Path
 
 
@@ -7,8 +6,7 @@ def find_missing_sites(list_path: str, directory_path: str):
     url_list = Path(list_path).read_text().splitlines()
     directory_list = sites_from_warc_directory(directory_path)
     directory_list = [f"https://{item}" for item in directory_list]
-    diff = unified_diff(url_list, directory_list)
-    missing = [item.lstrip("-") for item in diff if item.startswith("-")]
+    missing = sorted(set(url_list) - set(directory_list))
     return missing
 
 
