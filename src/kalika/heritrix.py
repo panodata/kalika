@@ -107,6 +107,9 @@ class Crawler:
 
     def finish_jobs(self, path: str):
         target_path = Path(path)
+        subdirectories = ["report", "warc"]
+        for subdirectory in subdirectories:
+            (target_path / subdirectory).mkdir(parents=True, exist_ok=True)
         # RUNNING, FINISHED
         jobs = self.api.list_jobs(status="FINISHED")
         for job_name in sorted(jobs):
@@ -133,7 +136,7 @@ class Crawler:
         ]
         for delete_key in delete_keys:
             job_info["job"].pop(delete_key, None)
-        job_info_path = Path(target_path / f"{job_name}-report.json")
+        job_info_path = Path(target_path / "report" / f"{job_name}-report.json")
         job_info_path.write_text(json.dumps(job_info, indent=2))
 
         # Download all WARC files.
@@ -151,7 +154,9 @@ class Crawler:
                     m = regex.match(str(warc_file.name))
                     if m:
                         seq_number = m.group(1)
-                        warc_file.move(target_path / f"{job_name}-{seq_number}.warc.gz")  # ty: ignore[unresolved-attribute]
+                        warc_file.move(  # ty: ignore[unresolved-attribute]
+                            target_path / "warc" / f"{job_name}-{seq_number}.warc.gz"
+                        )
                     else:
                         raise ValueError(
                             f"Could not parse WARC file name {warc_file.name}"
@@ -159,7 +164,7 @@ class Crawler:
             else:
                 warc_file = warc_files[0]
                 logger.info("INFO: WARC file for %s: %s", job_name, warc_file)
-                warc_file.move(target_path / f"{job_name}.warc.gz")  # ty: ignore[unresolved-attribute]
+                warc_file.move(target_path / "warc" / f"{job_name}.warc.gz")  # ty: ignore[unresolved-attribute]
 
             self.api.teardown(job_name=job_name)
             # api.wait_for_action(job_name=job_name, action="teardown", poll_delay=0.25)
