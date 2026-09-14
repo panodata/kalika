@@ -29,7 +29,7 @@ class Crawler:
         return self.api.info()
 
     def add_url(self, url: str):
-
+        """Add single URL or multiple URLs per textfile."""
         parsed_url = urlparse(url)
         job_name = parsed_url.hostname
         if job_name is None:
@@ -71,6 +71,8 @@ class Crawler:
     def add_file(self, path: str):
         urls = Path(path).read_text().splitlines()
         for url in urls:
+            if not url or url.startswith("#"):
+                continue
             self.add_url(url)
 
     def get_jobs(self):
@@ -115,6 +117,7 @@ class Crawler:
     def finish_job(self, job_name: str, target_path: str | Path):
         logger.info("Finishing job: %s", job_name)
         target_path = Path(target_path)
+
         # Save job metadata to JSON file.
         job_info = cast(dict, cast(object, self.api.info(job_name=job_name)))
         delete_keys = [
