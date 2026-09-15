@@ -7,7 +7,11 @@ import click
 from tabulate import tabulate
 
 from kalika.heritrix import Crawler
-from kalika.listmanager import find_missing_sites, find_missing_sites_ordered
+from kalika.listmanager import (
+    chunk_listfile,
+    find_missing_sites,
+    find_missing_sites_ordered,
+)
 from kalika.model import CrawlerInfo, CrawlerManager
 from kalika.util import read_config, setup_logging
 
@@ -129,7 +133,7 @@ def list_jobs(ctx: click.Context):
     default=False,
     help="Whether to process the input file in order",
 )
-def compare(
+def compare_list(
     ctx: click.Context, url_list: str, directory: str, ordered: Optional[bool] = False
 ):
     """Display list of missing sites."""
@@ -138,3 +142,18 @@ def compare(
     else:
         missing = find_missing_sites(url_list, directory)
     print("\n".join(missing))  # noqa: T201
+
+
+@main.command()
+@click.pass_context
+@click.argument("url_list", help="Path to input list")
+@click.option(
+    "--chunk-size",
+    type=int,
+    default=500,
+    required=False,
+    help="Chunk size (default 500)",
+)
+def chunk_list(ctx: click.Context, url_list: str, chunk_size: Optional[int] = 500):
+    """Partition list into equal sized chunks."""
+    chunk_listfile(url_list, chunk_size)

@@ -60,7 +60,13 @@ kalika drain /media/archive
 Display missing sites by comparing list of input URLs
 against files in the WARC output directory.
 ```shell
-kalika compare --url-list urls.txt --directory /media/archive
+kalika compare-list --url-list urls.txt --directory /media/archive
+```
+
+Create equal-sized chunks from URL file, named `urls-00.txt`, `urls-01.txt`,
+`urls-02.txt`, etc.
+```shell
+kalika chunk-list urls.txt --chunk-size 500
 ```
 
 

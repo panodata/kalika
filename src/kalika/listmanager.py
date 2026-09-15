@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Union, cast
+from typing import Dict, List, Optional, Union, cast
 
 import orjsonl
 
@@ -53,3 +53,20 @@ def sites_from_warc_directory(warc_directory: str):
         items.append(name)
     items = sorted(set(items))
     return items
+
+
+def chunk_listfile(list_path: Union[Path, str], chunk_size: Optional[int] = 500):
+    """Chunk URL list file into equal chunks."""
+    list_path = Path(list_path)
+    items = Path(list_path).read_text().splitlines()
+    chunks = chunk_list(items, chunk_size)
+    for i, c in enumerate(chunks):
+        chunkfile = list_path.parent / (
+            Path(list_path).stem + f"-{i:02d}" + list_path.suffix
+        )
+        chunkfile.write_text("\n".join(c))
+
+
+def chunk_list(items, n):
+    """Chunk a list into equal chunks."""
+    return [items[i : i + n] for i in range(0, len(items), n)]
