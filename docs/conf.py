@@ -77,6 +77,8 @@ intersphinx_mapping = {}
 linkcheck_ignore = [
     r"https://github.com/",
     r"https://web.archive.org/",
+    r"https://paperless-ngx.com/",
+    r"https://docs.paperless-ngx.com/",
 ]
 linkcheck_anchors_ignore_for_url = [
     r"https://github.com/",
