@@ -45,14 +45,14 @@ Feed a list of URLs.
 ```shell
 tmux new -s feed
 export HERITRIX_URL="https://heritrix.example.org:8443/engine"
-kalika add feed.txt
+kalika heritrix add feed.txt
 ```
 
 Drain WARC files into target directory.
 ```shell
 tmux new -s drain
 export HERITRIX_URL="https://heritrix.example.org:8443/engine"
-kalika drain /media/archive
+kalika heritrix drain /media/archive
 ```
 
 ## Tools
@@ -60,13 +60,13 @@ kalika drain /media/archive
 Display missing sites by comparing list of input URLs
 against files in the WARC output directory.
 ```shell
-kalika compare-list --url-list urls.txt --directory /media/archive
+kalika urllist compare --url-list urls.txt --directory /media/archive
 ```
 
 Create equal-sized chunks from URL file, named `urls-00.txt`, `urls-01.txt`,
 `urls-02.txt`, etc.
 ```shell
-kalika chunk-list urls.txt --chunk-size 500
+kalika urllist chunk urls.txt --chunk-size 500
 ```
 
 

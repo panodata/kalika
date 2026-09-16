@@ -19,27 +19,33 @@ logger = logging.getLogger(__name__)
 
 
 @click.group()
-@click.pass_context
-@click.option(
-    "--config", type=str, envvar="HERITRIX_CONFIG", help="Path to config file"
-)
-@click.option(
-    "--heritrix-url", type=str, envvar="HERITRIX_URL", help="Heritrix server URL"
-)
+@click.option("--config", type=str, envvar="KALIKA_CONFIG", help="Path to config file")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose logging")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
-def main(
-    ctx: click.Context, config: str, heritrix_url: str, verbose: bool, debug: bool
-):
+@click.version_option()
+@click.pass_context
+def main(ctx: click.Context, config: str, verbose: bool, debug: bool):
     setup_logging()
     logger.info("Welcome to Kalika")
 
+    ctx.meta["config"] = {}
     if config:
         ctx.meta["config"] = read_config(config)
+
+
+@main.group()
+@click.option(
+    "--heritrix-url", type=str, envvar="HERITRIX_URL", help="Heritrix server URL"
+)
+@click.pass_context
+def heritrix(ctx: click.Context, heritrix_url: str):
+    """Send commands to the Heritrix crawler."""
+    if ctx.meta["config"]:
+        pass
     elif heritrix_url:
         ctx.meta["config"] = {"heritrix": {"servers": [heritrix_url]}}
     else:
-        raise ValueError("Environment variable HERITRIX_CONFIG or HERITRIX_URL not set")
+        raise ValueError("Environment variable KALIKA_CONFIG or HERITRIX_URL not set")
 
     crawlers: List[CrawlerInfo] = []
     for server in ctx.meta["config"]["heritrix"]["servers"]:
@@ -49,7 +55,7 @@ def main(
     ctx.meta["mgr"] = CrawlerManager(crawlers=crawlers)
 
 
-@main.command()
+@heritrix.command()
 @click.pass_context
 @click.argument("item", help="Item to crawl: Single URL or file with multiple URLs")
 @click.option(
@@ -75,14 +81,14 @@ def add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
         sys.exit(1)
 
 
-@main.command()
-@click.pass_context
+@heritrix.command()
 @click.argument("path", help="Path to output directory")
 @click.option(
     "--crawler", "crawler_index", type=int, help="Crawler number to dispatch to (0-x)"
 )
+@click.pass_context
 def drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
-    """Drain WARC file from the crawler."""
+    """Drain WARC files from the crawler."""
     if not Path(path).exists():
         logger.error("Path does not exist: %s", path)
         sys.exit(1)
@@ -100,7 +106,7 @@ def drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
     crawler.finish_jobs(path)
 
 
-@main.command()
+@heritrix.command()
 @click.pass_context
 def list_jobs(ctx: click.Context):
     """Display list of crawler jobs."""
@@ -119,8 +125,14 @@ def list_jobs(ctx: click.Context):
         print()  # noqa: T201
 
 
-@main.command()
+@main.group()
 @click.pass_context
+def urllist(ctx: click.Context):
+    """Tools for working with URL lists."""
+    pass
+
+
+@urllist.command()
 @click.option("--url-list", type=str, required=True, help="Path to URL list file")
 @click.option(
     "--directory", type=str, required=True, help="Path to downloaded WARC files"
@@ -133,7 +145,8 @@ def list_jobs(ctx: click.Context):
     default=False,
     help="Whether to process the input file in order",
 )
-def compare_list(
+@click.pass_context
+def compare(
     ctx: click.Context, url_list: str, directory: str, ordered: Optional[bool] = False
 ):
     """Display list of missing sites."""
@@ -144,8 +157,7 @@ def compare_list(
     print("\n".join(missing))  # noqa: T201
 
 
-@main.command()
-@click.pass_context
+@urllist.command()
 @click.argument("url_list", help="Path to input list")
 @click.option(
     "--chunk-size",
@@ -154,6 +166,7 @@ def compare_list(
     required=False,
     help="Chunk size (default 500)",
 )
-def chunk_list(ctx: click.Context, url_list: str, chunk_size: Optional[int] = 500):
+@click.pass_context
+def chunk(ctx: click.Context, url_list: str, chunk_size: Optional[int] = 500):
     """Partition list into equal sized chunks."""
     chunk_listfile(url_list, chunk_size)
