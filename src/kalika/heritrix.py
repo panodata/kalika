@@ -3,6 +3,7 @@ import logging
 import re
 import shutil
 import tempfile
+from importlib.resources import files
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import cast
@@ -36,11 +37,8 @@ class Crawler:
             raise ValueError("Job name cannot be None")
         logger.info("Adding job: %s", job_name)
 
-        # dump info
-        # pprint(self.api.info(raw=False))
-
-        # FIXME: Use correct path to the package, not to the repository root.
-        job_xml_path = Path("src/kalika/crawler-beans.cxml")
+        # Prepare Heritrix job file.
+        job_xml_path = files("kalika") / "crawler-beans.cxml"
         job_xml = job_xml_path.read_text()
         job_xml = job_xml.replace("# Add seed URL here.", url)
         job_xml = job_xml.replace(
