@@ -4,18 +4,18 @@ outline: deep
 
 # Welcome to Kalika
 
-Kalika is a web archiver and crawler based on Heritrix and pywb,
-providing a convenient interface to both of them. It supports you
-to:
+Kalika is a minimal web archive workflow system based on standard
+tools like Heritrix, Browsertrix, and pywb from the Internet Archive
+and Webrecorder projects.
 
-- Crawl the web using Internet Archive's [Heritrix] to create per-site WARC files.
-- Replay WARC files using [pywb]'s `wayback` application, providing the traditional
-  "Wayback Machine" functionality.
+It supports you to crawl the web, store archives of websites,
+and replay them in the spirit of the traditional Wayback Machine.
 
-:::{rubric} Etymology
-:::
+Please read the {ref}`handbook` and {ref}`prior-art` sections of the
+documentation to learn about how to install and operate Kalika and
+related tools.
 
-[Kalika][Kalika-goddess] is a major goddess in Hinduism, primarily associated
+**Etymology:** [Kalika][Kalika-goddess] is a major goddess in Hinduism, primarily associated
 with time, death, and destruction. Kalika is also connected with transcendental
 knowledge and is the first of the ten Mahavidyas, goddesses who provide
 liberating knowledge.
@@ -28,6 +28,7 @@ liberating knowledge.
 :hidden:
 
 handbook
+prior-art
 ```
 
 ```{toctree}
@@ -42,7 +43,5 @@ backlog
 ```
 
 
-[Heritrix]: https://github.com/internetarchive/heritrix3
 [Kalika-goddess]: https://en.wikipedia.org/wiki/Kali
 [LICENSE]: https://github.com/panodata/kalika/blob/main/LICENSE
-[pywb]: https://pypi.org/project/pywb/

@@ -1,3 +1,5 @@
+(handbook)=
+
 # Handbook
 
 ## Install

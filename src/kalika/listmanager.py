@@ -41,11 +41,11 @@ def sites_from_warc_directory(warc_directory: str):
 
     A typical layout of a list of per-site WARC files can look like this:
 
-    zagueros.noblogs.org-00000.warc.gz
-    zagueros.noblogs.org-00001.warc.gz
-    zagueros.noblogs.org-00002.warc.gz
+    www.example.org-00000.warc.gz
+    www.example.org-00001.warc.gz
+    www.example.org-00002.warc.gz
 
-    Derive it into a single item `zagueros.noblogs.org`.
+    Derive it into a single item `www.example.org`.
     """
     items = []
     for candidate in sorted(Path(warc_directory).glob("*.warc.gz")):

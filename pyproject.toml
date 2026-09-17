@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "kalika"
-description = "Web archiver and crawler based on Heritrix and pywb"
+description = "Minimal web archive workflow system"
 readme = "README.md"
 keywords = [
   "archiving",

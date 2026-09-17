@@ -3,7 +3,10 @@
 ## Iteration +1
 
 - Service: Parse JSON reports to find unfinished jobs
-- Image snapshot of homepage using [shot-scraper]
+- Image snapshot of homepage using [shot-scraper] (live)
+- Migrate to Browsertrix, then testdrive-archive
+  - https://factsanddetails.com/
+  - https://www.ebsco.com/research-starters/
 
 ## Iteration +2
 
