@@ -6,6 +6,7 @@ from typing import List, Optional
 import click
 from tabulate import tabulate
 
+from kalika.browsertrix import BrowsertrixCrawler
 from kalika.curation import ArchiveCuration
 from kalika.heritrix import Crawler
 from kalika.listmanager import (
@@ -57,13 +58,13 @@ def heritrix(ctx: click.Context, heritrix_url: str):
     ctx.meta["mgr"] = CrawlerManager(crawlers=crawlers)
 
 
-@heritrix.command()
+@heritrix.command(name="add")
 @click.pass_context
 @click.argument("item", help="Item to crawl: Single URL or file with multiple URLs")
 @click.option(
     "--crawler", "crawler_index", type=int, help="Crawler number to dispatch to (0-x)"
 )
-def add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
+def heritrix_add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
     """Add one or multiple items to the crawler."""
     mgr: CrawlerManager = ctx.meta["mgr"]
     if crawler_index is not None:
@@ -83,13 +84,13 @@ def add(ctx: click.Context, item: str, crawler_index: Optional[int] = None):
         sys.exit(1)
 
 
-@heritrix.command()
+@heritrix.command(name="drain")
 @click.argument("path", help="Path to output directory")
 @click.option(
     "--crawler", "crawler_index", type=int, help="Crawler number to dispatch to (0-x)"
 )
 @click.pass_context
-def drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
+def heritrix_drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
     """Drain WARC files from the crawler."""
     if not Path(path).exists():
         logger.error("Path does not exist: %s", path)
@@ -108,9 +109,9 @@ def drain(ctx: click.Context, path: str, crawler_index: Optional[int] = None):
     crawler.finish_jobs(path)
 
 
-@heritrix.command()
+@heritrix.command(name="list-jobs")
 @click.pass_context
-def list_jobs(ctx: click.Context):
+def heritrix_list_jobs(ctx: click.Context):
     """Display list of crawler jobs."""
     mgr: CrawlerManager = ctx.meta["mgr"]
     for crawler_info in mgr.crawlers:
@@ -204,3 +205,26 @@ def to_wacz(ctx: click.Context, directory: str):
 def serve(ctx: click.Context, directory: str, port: Optional[int] = None):
     """Tools for working with URL lists."""
     run_wayback(directory=directory, port=port)
+
+
+@main.group()
+@click.pass_context
+def browsertrix(ctx: click.Context):
+    """Send commands to the Browsertrix crawler."""
+    pass
+
+
+@browsertrix.command(name="add")
+@click.pass_context
+@click.argument("item", help="Item to crawl: Single URL or file with multiple URLs")
+@click.option("--directory", type=str, required=True, help="Path to archive directory")
+def browsertrix_add(ctx: click.Context, item: str, directory: str):
+    """Add one or multiple items to the crawler."""
+    crawler = BrowsertrixCrawler(directory=directory)
+    if Path(item).is_file():
+        crawler.add_file(item)
+    elif item.startswith("http://") or item.startswith("https://"):
+        crawler.add_url(item)
+    else:
+        logger.error("Item is not a file or url: %s", item)
+        sys.exit(1)

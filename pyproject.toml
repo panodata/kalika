@@ -11,6 +11,7 @@ description = "Minimal web archive workflow system"
 readme = "README.md"
 keywords = [
   "archiving",
+  "browsertrix",
   "conservancy",
   "heritrix",
   "library",
@@ -76,6 +77,7 @@ dynamic = [ "version" ]
 dependencies = [
   "click",
   "colorlog",
+  "docker",
   "heritrix3",
   "legacy-cgi",
   "orjsonl",

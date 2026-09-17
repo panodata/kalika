@@ -12,10 +12,12 @@ from urllib.parse import urlparse
 import pandas as pd
 from heritrix3 import HeritrixAPI, disable_ssl_warnings
 
+from kalika.model import CrawlerBase
+
 logger = logging.getLogger(__name__)
 
 
-class Crawler:
+class Crawler(CrawlerBase):
     def __init__(self, heritrix_url: str):
         self.heritrix_url = heritrix_url
         disable_ssl_warnings()
@@ -65,13 +67,6 @@ class Crawler:
         logger.info("Launching: %s", job_name)
         self.api.launch(job_name=job_name)
         self.api.wait_for_action(job_name=job_name, action="launch", poll_delay=0.25)
-
-    def add_file(self, path: str):
-        urls = Path(path).read_text().splitlines()
-        for url in urls:
-            if not url or url.startswith("#"):
-                continue
-            self.add_url(url)
 
     def get_jobs(self):
         # RUNNING, FINISHED
