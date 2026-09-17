@@ -15,7 +15,7 @@ class ArchiveCuration:
         # wacz create -o www.example.wacz www.example.org.warc.gz
         from wacz.main import main as run_wacz
 
-        for warc_file in Path(self.directory).rglob("*.warc.gz"):
+        for warc_file in sorted(Path(self.directory).rglob("*.warc.gz")):
             wacz_file = warc_file.with_suffix("").with_suffix(".wacz")
             logger.info(f"Converting {warc_file} to WACZ format")
             logger.info(f"WACZ file: {wacz_file}")
