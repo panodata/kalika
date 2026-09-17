@@ -14,6 +14,7 @@ from kalika.listmanager import (
     find_missing_sites_ordered,
 )
 from kalika.model import CrawlerInfo, CrawlerManager
+from kalika.server import run_wayback
 from kalika.util import read_config, setup_logging
 
 logger = logging.getLogger(__name__)
@@ -187,3 +188,19 @@ def to_wacz(ctx: click.Context, directory: str):
     """Convert all WARC files to WACZ files."""
     archive = ArchiveCuration(directory=directory)
     archive.to_wacz()
+
+
+@main.command()
+@click.option(
+    "--directory", type=str, required=True, help="Path where collections are stored"
+)
+@click.option(
+    "--port",
+    type=int,
+    required=False,
+    help="TCP port number to listen on",
+)
+@click.pass_context
+def serve(ctx: click.Context, directory: str, port: Optional[int] = None):
+    """Tools for working with URL lists."""
+    run_wayback(directory=directory, port=port)

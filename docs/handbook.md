@@ -33,6 +33,8 @@ sysctl --system
 
 ## Operate
 
+### Crawl
+
 Run Heritrix.
 ```shell
 docker run --detach --init --user root \
@@ -53,6 +55,16 @@ Drain WARC files into target directory.
 tmux new -s drain
 export HERITRIX_URL="https://heritrix.example.org:8443/engine"
 kalika heritrix drain /media/archive
+```
+
+### Replay
+
+```shell
+mkdir /media/replay
+cd /media/replay
+wb-manager init research-1
+wb-manager add research-1 /media/archive/www.example.org.warc.gz
+kalika serve --directory /media/replay
 ```
 
 ## Tools
