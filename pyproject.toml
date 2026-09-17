@@ -81,6 +81,7 @@ dependencies = [
   "pandas",
   "tabulate",
   "tomli",
+  "wacz",
 ]
 optional-dependencies.develop = [
   "poethepoet<1",

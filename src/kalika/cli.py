@@ -6,6 +6,7 @@ from typing import List, Optional
 import click
 from tabulate import tabulate
 
+from kalika.curation import ArchiveCuration
 from kalika.heritrix import Crawler
 from kalika.listmanager import (
     chunk_listfile,
@@ -170,3 +171,19 @@ def compare(
 def chunk(ctx: click.Context, url_list: str, chunk_size: Optional[int] = 500):
     """Partition list into equal sized chunks."""
     chunk_listfile(url_list, chunk_size)
+
+
+@main.group()
+@click.pass_context
+def curate(ctx: click.Context):
+    """Tools for curating web archives."""
+    pass
+
+
+@curate.command()
+@click.argument("directory", help="Path to WARC files")
+@click.pass_context
+def to_wacz(ctx: click.Context, directory: str):
+    """Convert all WARC files to WACZ files."""
+    archive = ArchiveCuration(directory=directory)
+    archive.to_wacz()
