@@ -166,3 +166,15 @@ class Crawler(CrawlerBase):
         else:
             logger.info("WARNING: No WARC files for: %s", job_name)
         shutil.rmtree(tmpdir)
+
+    def recycle(self):
+        """
+        docker rm heritrix-1 -f
+        rm -rf /var/heritrix-1/*
+        docker run --detach --init --user root --name heritrix-1 \
+            --rm -p 8443:8443 -e "USERNAME=admin" -e "PASSWORD=admin" \
+            -e "JAVA_OPTS=-Xmx4096M" \
+            -v /var/heritrix-1:/opt/heritrix/jobs docker.io/iipc/heritrix
+        :return:
+        """
+        pass
