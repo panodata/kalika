@@ -157,6 +157,10 @@ def compare(
         missing = find_missing_sites_ordered(url_list, directory)
     else:
         missing = find_missing_sites(url_list, directory)
+    if missing:
+        logger.warning("URL list is incomplete.")
+    else:
+        logger.info("URL list is complete.")
     print("\n".join(missing))  # noqa: T201
 
 

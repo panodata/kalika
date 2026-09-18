@@ -48,8 +48,11 @@ def sites_from_warc_directory(warc_directory: str):
     Derive it into a single item `www.example.org`.
     """
     items = []
-    for candidate in sorted(Path(warc_directory).glob("*.warc.gz")):
+    for candidate in Path(warc_directory).rglob("*.warc.gz"):
         name = candidate.with_suffix("").with_suffix("").name.rstrip("-0123456789")
+        items.append(name)
+    for candidate in Path(warc_directory).rglob("*.wacz"):
+        name = candidate.with_suffix("").name.rstrip("-0123456789")
         items.append(name)
     items = sorted(set(items))
     return items
