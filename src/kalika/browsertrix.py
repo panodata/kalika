@@ -23,7 +23,8 @@ class BrowsertrixCrawler(CrawlerBase):
         parsed_url = urlparse(url)
         job_name = parsed_url.hostname
         if job_name is None:
-            raise ValueError("Job name cannot be None")
+            logger.warning("Job name cannot be None")
+            return
 
         collection_name = job_name.replace(".", "_")
         report_filename = f"{job_name}-report.json"
@@ -53,10 +54,17 @@ class BrowsertrixCrawler(CrawlerBase):
                     detach=False,
                 )
             except ContainerError as e:
-                logger.error("Crawling '%s' failed: %s", job_name, e)
+                logger.error("Crawling '%s' possibly failed: %s", job_name, e)
 
             # Collect outcome.
-            shutil.copy(crawls_path / report_filename, report_file)
-            for wacz in crawls_path.rglob("*.wacz"):
-                target_filename = wacz.name.replace("_", ".")
-                shutil.copy(wacz, wacz_directory / target_filename)
+            try:
+                shutil.copy(crawls_path / report_filename, report_file)
+                for wacz in crawls_path.rglob("*.wacz"):
+                    target_filename = wacz.name.replace("_", ".")
+                    shutil.copy(wacz, wacz_directory / target_filename)
+            except Exception as e:
+                logger.error(
+                    "Unable to extract files from temporary directory '%s': %s",
+                    crawls_path,
+                    e,
+                )
