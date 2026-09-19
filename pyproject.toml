@@ -87,6 +87,7 @@ dependencies = [
   "tabulate",
   "tomli",
   "wacz",
+  "wcmatch",
 ]
 optional-dependencies.develop = [
   "poethepoet<1",

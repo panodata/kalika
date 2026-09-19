@@ -197,7 +197,13 @@ def to_wacz(ctx: click.Context, directory: str):
 
 @main.command()
 @click.option(
-    "--directory", type=str, required=True, help="Path where collections are stored"
+    "--spool-directory",
+    type=str,
+    required=True,
+    help="Path to store wayback collections",
+)
+@click.option(
+    "--archive-directory", type=str, required=False, help="Path to WARC or WACZ files"
 )
 @click.option(
     "--port",
@@ -206,9 +212,16 @@ def to_wacz(ctx: click.Context, directory: str):
     help="TCP port number to listen on",
 )
 @click.pass_context
-def serve(ctx: click.Context, directory: str, port: Optional[int] = None):
+def serve(
+    ctx: click.Context,
+    spool_directory: str,
+    archive_directory: Optional[str] = None,
+    port: Optional[int] = None,
+):
     """Tools for working with URL lists."""
-    run_wayback(directory=directory, port=port)
+    run_wayback(
+        spool_directory=spool_directory, archive_directory=archive_directory, port=port
+    )
 
 
 @main.group()
