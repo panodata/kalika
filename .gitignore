@@ -1,4 +1,5 @@
 .idea/
+dist/
 docs/_build/
 tmp/
 var/
