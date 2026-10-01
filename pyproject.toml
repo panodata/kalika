@@ -82,7 +82,7 @@ dependencies = [
   "legacy-cgi",
   "orjsonl",
   "pandas",
-  "pywb @ git+https://github.com/openingest/pywb@relaxed-gevent",
+  "pywb",
   "setuptools<81",
   "tabulate",
   "tomli",
